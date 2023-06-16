@@ -12,7 +12,6 @@ spring:
       ddl-auto: create-drop
 ---
 spring:
-  _key: 'profiles'
   profiles: lee
   kafka:
     producer:
