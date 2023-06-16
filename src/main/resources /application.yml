@@ -25,11 +25,4 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
----
-spring:
-  _key: 'kafka'
-  kafka:
-    consumer:
-      properties:
-        spring.json.trusted.packages: "*"
-        isolation.level: read_committed #leee
+
