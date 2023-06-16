@@ -1,4 +1,6 @@
-package food.delivery.config.multitenancy;
+path: {{name}}/{{{options.packagePath}}}/config/kafka
+---
+package {{options.package}}.config.multitenancy;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
