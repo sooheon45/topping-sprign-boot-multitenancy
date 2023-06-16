@@ -33,3 +33,18 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         isolation.level: read_committed    
+---
+spring:
+  kafka:
+    _key: 'producer'
+    producer:
+      retries: 5
+      acks: all
+      properties:
+        enable:
+          idempotence: false #leee
+    _key: 'consumer'
+    consumer:
+      properties:
+        spring.json.trusted.packages: "*"
+        isolation.level: read_committed #leee        
