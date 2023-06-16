@@ -1,0 +1,35 @@
+forEach: BoundedContext
+fileName: pom.xml
+path: {{name}}/.
+ifDuplicated: merge
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+	<properties>
+		<java.version>11</java.version>
+		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
+		<spring-cloud-stream.version>Germantown.SR1</spring-cloud-stream.version>
+		<cucumber.version>6.8.1</cucumber.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId isKey="true">spring-boot-starter-security</artifactId>
+        <version>${spring-boot.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId isKey="true">jjwt</artifactId>
+        <version>0.9.1</version>
+    </dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId isKey="true">postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+
+</project>
