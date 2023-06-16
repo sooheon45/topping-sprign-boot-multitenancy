@@ -12,6 +12,14 @@ spring:
       ddl-auto: create-drop
 ---
 spring:
+  kafka:
+    consumer:
+      properties:
+        _key: 'isolation.level'
+        spring.json.trusted.packages: "*"
+        isolation.level: read-lee         
+---
+spring:
   _key: 'profiles'
   profiles: lee
   kafka:
