@@ -1,4 +1,4 @@
-path: {{name}}/{{{options.packagePath}}}/config/kafka
+path: {{name}}/{{{options.packagePath}}}/config/multitenancy
 ---
 package {{options.package}}.config.multitenancy;
 
