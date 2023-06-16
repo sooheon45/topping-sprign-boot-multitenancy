@@ -5,7 +5,6 @@ ifDuplicated: merge
 ---
 spring:
   jpa:
-    _key: 'database'
     database: POSTGRESQL
     show-sql: true
     hibernate:
