@@ -4,14 +4,6 @@ path: {{name}}/src/main/resources
 ifDuplicated: merge
 ---
 spring:
-  jpa:
-    _key: 'database'
-    database: POSTGRESQL
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
----
-spring:
   _key: 'profiles'
   profiles: lee
   kafka:
@@ -25,6 +17,14 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         isolation.level: read_committed    
+---
+spring:
+  jpa:
+    _key: 'database'
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
 ---
 spring:
   kafka:
