@@ -32,12 +32,4 @@ spring:
     consumer:
       properties:
         spring.json.trusted.packages: "*"
-        isolation.level: read_committed #leee    
----
-spring:
-  kafka:
-    _key: 'consumer'
-    consumer:
-      properties:
-        spring.json.trusted.packages: "*"
-        isolation.level: read_committed #leee   
+        isolation.level: read_committed #leee
