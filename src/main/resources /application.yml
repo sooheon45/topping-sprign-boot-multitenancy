@@ -4,13 +4,9 @@ path: {{name}}/src/main/resources
 ifDuplicated: merge
 ---
 spring:
-  profiles: default
   jpa:
+    _key: 'database'
     database: POSTGRESQL
     show-sql: true
     hibernate:
-      ddl-auto: create-drop  
-    # properties:
-    #   hibernate:
-    #     show_sql: true
-    #     format_sql: true
+      ddl-auto: create-drop
