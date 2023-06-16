@@ -5,12 +5,14 @@ ifDuplicated: merge
 ---
 spring:
   jpa:
+    _key: 'database'
     database: POSTGRESQL
     show-sql: true
     hibernate:
       ddl-auto: create-drop
 ---
 spring:
+  _key: 'profiles'
   profiles: lee
   kafka:
     producer:
