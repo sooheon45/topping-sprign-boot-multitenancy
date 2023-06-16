@@ -27,8 +27,8 @@ spring:
       ddl-auto: create-drop
 ---
 spring:
+  _key: 'kafka'
   kafka:
-    _key: 'consumer'
     consumer:
       properties:
         spring.json.trusted.packages: "*"
