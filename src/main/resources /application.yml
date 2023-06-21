@@ -25,4 +25,14 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+---
+spring:
+  kafka:
+    producer:
+      _key: 'retries'
+      retries: 100
+      acks: all
+      properties:
+        enable:
+          idempotence: true   # Set Producer exactly once Trx
 
