@@ -4,21 +4,6 @@ path: {{name}}/src/main/resources
 ifDuplicated: merge
 ---
 spring:
-  _key: 'profiles'
-  profiles: lee
-  kafka:
-    producer:
-      retries: 5
-      acks: all
-      properties:
-        enable:
-          idempotence: true   # Set Producer exactly once Trx
-    consumer:
-      properties:
-        spring.json.trusted.packages: "*"
-        isolation.level: read_committed    
----
-spring:
   jpa:
     _key: 'database'
     database: POSTGRESQL
@@ -26,13 +11,28 @@ spring:
     hibernate:
       ddl-auto: create-drop
 ---
-spring:
-  kafka:
-    producer:
-      _key: 'retries'
-      retries: 100
-      acks: all
-      properties:
-        enable:
-          idempotence: true   # Set Producer exactly once Trx
+# spring:
+#   _key: 'profiles'
+#   profiles: lee
+#   kafka:
+#     producer:
+#       retries: 5
+#       acks: all
+#       properties:
+#         enable:
+#           idempotence: true   # Set Producer exactly once Trx
+#     consumer:
+#       properties:
+#         spring.json.trusted.packages: "*"
+#         isolation.level: read_committed    
+# ---
+# spring:
+#   kafka:
+#     producer:
+#       _key: 'retries'
+#       retries: 100
+#       acks: all
+#       properties:
+#         enable:
+#           idempotence: true   # Set Producer exactly once Trx
 
