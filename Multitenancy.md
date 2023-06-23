@@ -1,17 +1,137 @@
-## Spring-boot 기반의 Multitenancy.
+# Spring-boot 기반의 Multitenancy.
 
-# What Does Multitenant Mean?
+## What Does Multitenant Mean?
 
-애플리케이션을 구축할때, 직접 호스트하고 애플리케이션에서 제공하는 서비스를 여러 회사에 제공하려고 합니다. 그러나 서로 다른 회사의 데이터는 깔끔하게 분리되어야 합니다.
-이를 달성하기 위한 다양한 옵션이 있습니다. 가장 간단한 방법은 데이터베이스를 포함한 애플리케이션을 여러 번 배포하는 것입니다. 개념은 단순하지만 서비스를 제공할 테넌트가 몇 명 이상 생기면 관리하기가 악몽입니다.
+애플리케이션을 구축할때, 직접 호스트하고 애플리케이션에서 서비스를 제공하되, 다른 회사의 데이터는 분리하여 여러 회사에 제공하려고 합니다.
+제공하기 위해서 다양한 옵션이 있습니다. 가장 간단한 방법은 데이터베이스를 포함한 애플리케이션을 여러 번 배포하는 것입니다.여러개의 서비스가 생기면 관리하기가 힘들어 집니다.
+데이터를 분리하는 방법중 하나인 tenant 별로 데이터베이스 가지는 방법입니다.
 
-대신 데이터를 분리하는 하나의 애플리케이션 배포가 필요합니다. Hibernate는 이것을 하기 위한 세 가지 방법을 예상합니다:
+## Partitioned data.
 
-테이블을 분할할 수 있습니다. 이 컨텍스트에서 파티셔닝은 일반 ID 필드 외에도 엔터티에 tenantId기본 키의 일부인 가 있음을 의미합니다.
 
-서로 다른 테넌트에 대한 데이터를 별도이지만 동일한 스키마에 저장할 수 있습니다.
+### DB정보
+tenant 별로 DB정보를 세팅 합니다. tenant_1.properties, tenant_2.properties
 
-또는 테넌트당 데이터베이스를 가질 수 있습니다.
+### DB정보를 tenant설정
+- MultitenantConfiguration.java 에서 properties 가져와서 세팅합니다.
+```java
+    try {
+        tenantProperties.load(new FileInputStream(propertyFile));
+        String tenantId = tenantProperties.getProperty("name");
 
-물론 가장 큰 고객이 데이터베이스를 받고, 중간 규모 고객이 스키마를 받고, 다른 모든 고객이 파티션을 갖게 되는 다양한 방식을 꿈꿀 수 있지만, 이 예에서는 단순한 변형을 고수합니다.
+        dataSourceBuilder.driverClassName(tenantProperties.getProperty("datasource.driver-class-name"));
+        dataSourceBuilder.username(tenantProperties.getProperty("datasource.username"));
+        dataSourceBuilder.password(tenantProperties.getProperty("datasource.password"));
+        dataSourceBuilder.url(tenantProperties.getProperty("datasource.url"));
+        resolvedDataSources.put(tenantId, dataSourceBuilder.build());
+      } catch (IOException exp) {
+          throw new RuntimeException("Problem in tenant datasource:" + exp);
+      }
+```
+
+### Partitioning separation
+- TenantContext.java 에서는 ThreadLocal를 이용한 tenantId를 분리하여 파티셔닝을 가집니다.
+```java
+public class TenantContext {
+
+    private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();
+
+    public static String getCurrentTenant() {
+        return CURRENT_TENANT.get();
+    }
+
+    public static void setCurrentTenant(String tenant) {
+        CURRENT_TENANT.set(tenant);
+    }
+}
+```
+### Partitioning selection
+- TenantFilter.java 에서는 어떤 tenantId를 filtering하여 유저의 tenant 위치를 세팅 합니다.
+- MultitenantConfiguration에서 요청한 MultitenantDataSource에서 해당 TenantFilter를 이용하여 tenant 구분합니다.
+
+```java
+@Component
+@Order(1)
+class TenantFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+      FilterChain chain) throws IOException, ServletException {
+
+        String tenant = AuthenticationService.getTenant((HttpServletRequest) request);
+        TenantContext.setCurrentTenant(tenant);
+
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            TenantContext.setCurrentTenant("");
+        }
+
+    }
+}
+```
+
+### select tenant By user jwt
+- 로그인한 유저의 jwt에 의해서 tanat정보를 결정하게 됩니다.
+```java
+public static Authentication getAuthentication(HttpServletRequest req) {
+        String token = req.getHeader("Authorization");
+        if (token != null) {
+            String user = Jwts.parser()
+              .setSigningKey(SIGNINGKEY)
+              .parseClaimsJws(token.replace(PREFIX, ""))
+              .getBody()
+              .getSubject();
+            if (user != null) {
+                return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+            }
+        }
+
+        return null;
+    }
+```
+
+## Running
+### Kafka server and DB running
+```
+cd kafka
+docker-compose up
+```
+
+### create DB
+```
+docker exec -it infra-db-1 /bin/sh
+psql --username=postgres
+CREATE DATABASE tenant1;
+CREATE DATABASE tenant2;
+
+// show list of databases
+\l
+```
+
+## Run the backend micro-services
+
+## Run API Gateway (Spring Gateway)
+```
+cd gateway
+mvn spring-boot:run
+```
+
+## getting Token
+```
+http :8082/login username="user" password="baeldung"  #getting token
+http :8082/login username="admin" password="baeldung"  #getting token
+
+```
+
+## call service
+```
+- Token정보 없이 바로 호출시 401 (Unauthorized) 리턴됩니다.
+http :8088/serivce id="id"
+
+- 발급된 Token 정보와 함께 호출시
+http :8088/serivce id="id" "Authorization: Bearer eqsddx...."
+
+해당 유저의 tenant따른 저장된 DB정보가 호출됩ㄴ디ㅏ.
+```
 
