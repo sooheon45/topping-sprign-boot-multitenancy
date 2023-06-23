@@ -71,7 +71,7 @@ class TenantFilter implements Filter {
 }
 ```
 
-### select tenant By user jwt
+### Select tenant By user jwt
 - 로그인한 유저의 jwt에 의해서 tanat정보를 결정하게 됩니다.
 ```java
 public static Authentication getAuthentication(HttpServletRequest req) {
@@ -98,7 +98,7 @@ cd kafka
 docker-compose up
 ```
 
-### create DB
+### Create DB
 ```
 docker exec -it infra-db-1 /bin/sh
 psql --username=postgres
@@ -117,14 +117,14 @@ cd gateway
 mvn spring-boot:run
 ```
 
-## getting Token
+## Getting Token
 ```
 http :8082/login username="user" password="baeldung"  #getting token
 http :8082/login username="admin" password="baeldung"  #getting token
 
 ```
 
-## call service
+## Call service
 ```
 - Token정보 없이 바로 호출시 401 (Unauthorized) 리턴됩니다.
 http :8088/serivce id="id"
